@@ -14,7 +14,7 @@ Dell systems with Intel Arc GPUs have HEVC hardware decode **artificially disabl
 
 **This patch requires modifying protected system files in the Windows DriverStore. You must understand the implications:**
 
-- **Disabling Secure Boot** or enabling **Test Mode** weakens system security
+- **Disabling Secure Boot** is required and weakens system security
 - Modifying DriverStore files can cause system instability or boot failures
 - Incorrect patching may require driver reinstallation or system recovery
 - This patch is unsupported by Dell, Intel, or Microsoft
@@ -28,18 +28,26 @@ Dell systems with Intel Arc GPUs have HEVC hardware decode **artificially disabl
 
 - **Dell system with Intel Arc graphics** (tested on Latitude Rugged series)
 - **Official Intel Arc drivers** from intel.com (Dell OEM drivers not tested and may have different code paths)
-- **Test Mode enabled** OR **Secure Boot disabled** (required to modify DriverStore files)
+- **Secure Boot disabled** in BIOS (required to disable driver signature enforcement)
 - **Administrator privileges**
 - **Knowledge of Windows recovery** in case of issues
 
-### Enable Test Mode (if Secure Boot is on)
+### Disable Secure Boot
+
+1. Enter BIOS setup (usually F2 or F12 during boot)
+2. Find **Secure Boot** setting and set to **Disabled**
+3. Save and exit
+
+### Enable Test Mode (Optional)
+
+After disabling Secure Boot, you can enable Test Mode to bypass driver signature checks:
 
 ```cmd
 bcdedit /set testsigning on
 ```
 Then reboot. To disable later: `bcdedit /set testsigning off`
 
-**Note:** Test Mode displays a watermark on the desktop. Alternatively, disable Secure Boot in BIOS (reduces system security).
+**Note:** Test Mode displays a watermark on the desktop. This step may not be required on all systems—try patching without it first.
 
 ## Usage
 
