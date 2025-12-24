@@ -144,7 +144,7 @@ The `75` byte (JNZ) is changed to `EB` (JMP).
 
 ## Tested Configuration
 
-- **Driver**: Intel Arc Graphics Driver 32.0.101.6577 (official from intel.com)
+- **Driver**: Intel Arc Graphics Driver 32.0.101.8331 (official from intel.com)
 - **Hardware**: Dell Latitude Rugged with Intel Arc Graphics
 - **OS**: Windows 11
 
