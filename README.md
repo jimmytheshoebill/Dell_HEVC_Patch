@@ -2,16 +2,35 @@
 
 Enable HEVC/H.265 hardware decoding on Dell systems with Intel Arc graphics.
 
+## Use Case
+
+This patch was created to enable **Omnissa Horizon Client** (formerly VMware Horizon) to use HEVC codec for hardware-accelerated decoding when connecting to NVIDIA vGPU servers. Without this patch, Dell systems fall back to software decoding or H.264, resulting in higher CPU usage and reduced visual quality.
+
 ## Problem
 
 Dell systems with Intel Arc GPUs have HEVC hardware decode **artificially disabled** by Intel's DXVA drivers. The driver checks SMBIOS for Dell manufacturer and a feature flag, then masks out HEVC decode capabilities even though the hardware fully supports it.
 
+## ⚠️ Warning
+
+**This patch requires modifying protected system files in the Windows DriverStore. You must understand the implications:**
+
+- **Disabling Secure Boot** or enabling **Test Mode** weakens system security
+- Modifying DriverStore files can cause system instability or boot failures
+- Incorrect patching may require driver reinstallation or system recovery
+- This patch is unsupported by Dell, Intel, or Microsoft
+
+**Only proceed if you:**
+- Understand the risks of modifying system drivers
+- Have a system backup or recovery method available
+- Accept full responsibility for any consequences
+
 ## Requirements
 
 - **Dell system with Intel Arc graphics** (tested on Latitude Rugged series)
-- **Official Intel Arc drivers** from intel.com (Dell OEM drivers not tested)
+- **Official Intel Arc drivers** from intel.com (Dell OEM drivers not tested and may have different code paths)
 - **Test Mode enabled** OR **Secure Boot disabled** (required to modify DriverStore files)
 - **Administrator privileges**
+- **Knowledge of Windows recovery** in case of issues
 
 ### Enable Test Mode (if Secure Boot is on)
 
@@ -19,6 +38,8 @@ Dell systems with Intel Arc GPUs have HEVC hardware decode **artificially disabl
 bcdedit /set testsigning on
 ```
 Then reboot. To disable later: `bcdedit /set testsigning off`
+
+**Note:** Test Mode displays a watermark on the desktop. Alternatively, disable Secure Boot in BIOS (reduces system security).
 
 ## Usage
 
@@ -121,10 +142,17 @@ The `75` byte (JNZ) is changed to `EB` (JMP).
 
 ## Verification
 
-After patching and rebooting, verify HEVC decode is enabled:
+After patching and rebooting, verify HEVC decode is enabled using [DXVA Checker](https://bluesky-soft.com/en/DXVAChecker.html):
 
-1. Run [DXVA Checker](https://bluesky-soft.com/en/DXVAChecker.html)
-2. Look for `HEVC_VLD_Main` and related profiles in the decoder list
+1. Download and run DXVA Checker
+2. Select the **Decoder Device** tab
+3. Look for these HEVC profiles in the list:
+   - `HEVC_VLD_Main`
+   - `HEVC_VLD_Main10`
+
+**If these profiles appear, the patch was successful.** HEVC hardware decoding is now available for applications like Omnissa Horizon Client.
+
+**Note:** GPU-Z and some other tools use legacy D3D9 APIs which may still show HEVC as unavailable. This is cosmetic only—DXVA Checker (D3D11) is the authoritative test.
 
 ## Disclaimer
 
