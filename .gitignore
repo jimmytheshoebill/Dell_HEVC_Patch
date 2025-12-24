@@ -1,0 +1,13 @@
+# Intel driver files (DMCA)
+*.dll
+*.sys
+
+# Backups created by patch script
+*.hevc_backup
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Test files
+*.log
